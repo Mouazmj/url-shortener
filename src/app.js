@@ -23,6 +23,10 @@ app.use(session({
   saveUninitialized: false
 }));
 
-
+app.use((req, res, next) => {
+  res.locals.flash = req.session.flash;
+  delete req.session.flash;
+  next();
+});
 
 export default app;
