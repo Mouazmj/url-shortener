@@ -19,9 +19,19 @@ try {
     req.session.flash = { type: 'error', message: 'Invalid URL. Please include the protocol (http:// or https://).' };
     return res.redirect('/');
   }
-  const shortUrl = crypto.randomBytes(4).toString('hex');
-  const newUrl = new UrlModel({ originalUrl, shortUrl });
-  await newUrl.save();
+
+  let newUrl;
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+       const shortUrl = crypto.randomBytes(4).toString('hex');
+       newUrl = new UrlModel({ originalUrl, shortUrl });
+       await newUrl.save();
+       break;
+    } catch (error) {
+      if (error.code !== 11000) throw error;
+    }
+  }
   req.session.myUrls = [...(req.session.myUrls || []), newUrl._id];
   req.session.flash = { type: 'success', message: 'URL shortened successfully!' };
   res.redirect('/');
