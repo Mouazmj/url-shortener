@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 const showHome = async (req, res) => {
   try {
-  const urls = await UrlModel.find().sort({ createdAt: -1});
+    const urls = await UrlModel.find({ _id: { $in: req.session.myUrls || [] } }).sort({ createdAt: -1 });
   res.render('home', { urls });
   } catch (error) {
     console.error('Error fetching URLs:', error);
@@ -22,6 +22,7 @@ try {
   const shortUrl = crypto.randomBytes(4).toString('hex');
   const newUrl = new UrlModel({ originalUrl, shortUrl });
   await newUrl.save();
+  req.session.myUrls = [...(req.session.myUrls || []), newUrl._id];
   req.session.flash = { type: 'success', message: 'URL shortened successfully!' };
   res.redirect('/');
 } catch (error) {
