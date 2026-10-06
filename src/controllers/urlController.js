@@ -1,4 +1,6 @@
 import  UrlModel from '../models/Url.js';
+import validator from 'validator';
+import crypto from 'crypto';
 
 const showHome = async (req, res) => {
   try {
@@ -10,4 +12,22 @@ const showHome = async (req, res) => {
   }
 }
 
-export { showHome };
+const createShortUrl = async (req, res) => {
+try {
+  const { originalUrl } = req.body;
+  if (!validator.isURL(originalUrl, { require_protocol: true }) ) {
+    req.session.flash = { type: 'error', message: 'Invalid URL. Please include the protocol (http:// or https://).' };
+    return res.redirect('/');
+  }
+  const shortUrl = crypto.randomBytes(4).toString('hex');
+  const newUrl = new UrlModel({ originalUrl, shortUrl });
+  await newUrl.save();
+  req.session.flash = { type: 'success', message: 'URL shortened successfully!' };
+  res.redirect('/');
+} catch (error) {
+  console.error('Error creating short URL:', error);
+  res.status(500).send('Internal Server Error');
+}
+}
+
+export { showHome, createShortUrl };
