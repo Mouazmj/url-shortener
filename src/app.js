@@ -3,6 +3,7 @@ import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
+import router from './routes/urlRoutes.js';
 
 
 const app = express();
@@ -28,5 +29,7 @@ app.use((req, res, next) => {
   delete req.session.flash;
   next();
 });
+
+app.use('/', router);
 
 export default app;
