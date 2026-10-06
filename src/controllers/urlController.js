@@ -30,4 +30,19 @@ try {
 }
 }
 
-export { showHome, createShortUrl };
+const redirectToOriginal = async (req, res) => {
+  try {
+    const { code } = req.params;
+    const urlEntry = await UrlModel.findOne({ shortUrl: code });
+    if (!urlEntry) {
+      res.status(404).send('Short URL not found');
+    } else {
+      res.redirect(urlEntry.originalUrl);
+    }
+  } catch (error) {
+    console.error('Error redirecting to original URL:', error);
+    res.status(500).send('Internal Server Error');
+  }
+}
+
+export { showHome, createShortUrl, redirectToOriginal };
