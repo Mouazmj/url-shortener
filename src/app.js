@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import session from 'express-session';
 import router from './routes/urlRoutes.js';
 import helmet from 'helmet';
+import createError from 'http-errors';
 
 
 const app = express();
@@ -33,5 +34,15 @@ app.use((req, res, next) => {
 });
 
 app.use('/', router);
+
+app.use((req, res, next) => {
+  next(createError(404));
+})
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.status || 500);
+  res.send(err.message);
+});
 
 export default app;
