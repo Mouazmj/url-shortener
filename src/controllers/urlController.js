@@ -32,6 +32,11 @@ try {
       if (error.code !== 11000) throw error;
     }
   }
+
+  if (newUrl.isNew) {
+    throw new Error('Could not generate a unique short URL after multiple attempts.');
+  }
+  
   req.session.myUrls = [...(req.session.myUrls || []), newUrl._id];
   req.session.flash = { type: 'success', message: 'URL shortened successfully!' };
   res.redirect('/');
