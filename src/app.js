@@ -4,9 +4,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
 import router from './routes/urlRoutes.js';
+import helmet from 'helmet';
 
 
 const app = express();
+app.use(helmet());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
